@@ -1,0 +1,64 @@
+<App
+  layout="vertical-full-header"
+  loggedInUser="{{ display_name: '', avatar_url: '' }}"
+  onReady="
+    //read all users and set logged in user
+    const response = Actions.callApi({ url: '/api/users', method: 'get' });
+    if (Array.isArray(response) && response.length) setLoggedInUser(response[0]);
+
+    //read settings and set app state
+    const sresp = Actions.callApi({ url: '/api/settings', method: 'get' });
+    if (Array.isArray(sresp) && sresp.length && sresp[0].avatar_border_radius) {
+      appState.update({ settings: { avatar_border_radius: sresp[0].avatar_border_radius } });    
+    }"
+>
+  <AppState
+    id="appState"
+    initialValue="{{ settings: {avatar_border_radius: '0px'} }}"
+  />
+
+  <AppHeader>
+    <property name="logoTemplate">
+      <H1>
+        XMLUI Invoice
+      </H1>
+    </property>
+
+    <property name="profileMenuTemplate">
+      <Link to="/settings" textDecoration="none" color="inherit">
+        <HStack verticalAlignment="center">
+          <Avatar
+            name="{loggedInUser.display_name}"
+            size="sm"
+            url="{loggedInUser.avatar_url}"
+            borderRadius="{appState.value.settings.avatar_border_radius}"
+          />
+          <Text>
+            {loggedInUser.display_name || 'Default User'}
+          </Text>
+        </HStack>
+      </Link>
+    </property>
+  </AppHeader>
+  <NavPanel>
+    <NavLink label="Dashboard" to="/" />
+    <NavLink label="Invoices" to="/invoices" />
+    <NavLink label="Clients" to="/clients" />
+    <NavLink label="Products" to="/products" />
+    <NavLink label="Settings" to="/settings" />
+  </NavPanel>
+  <Pages fallbackPath="/">
+    <Page url="/">
+      <!-- empty content area -->
+    </Page>
+    <Page url="/settings">
+      <Settings />
+    </Page>
+  </Pages>
+  <Footer>
+      <Text >
+        Built with XMLUI
+      </Text>
+      <ToneSwitch />    
+  </Footer>
+</App>

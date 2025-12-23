@@ -1,0 +1,26 @@
+<Component name="Settings">
+        <H2>
+                Settings
+        </H2>
+        <Card>
+        <HStack >
+                <H2>
+                        Users
+                </H2>
+                <SpaceFiller />
+                <Button>
+                        Add User
+                </Button>
+        </HStack>
+         <DataSource id="users" url="/api/users" />
+
+        <Table title="Users" data="{users}">
+                <Column bindTo="username" />
+                <Column bindTo="display_name"/>
+                <Column bindTo="email"  />
+                <Column bindTo="avatar_url" header="Avatar" />
+        </Table>
+        </Card>
+
+       
+</Component>
