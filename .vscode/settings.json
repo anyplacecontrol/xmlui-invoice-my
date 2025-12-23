@@ -1,0 +1,13 @@
+{
+  "files.associations": {
+    "*.xmlui": "xml"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[xml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "prettier.printWidth": 200,
+  "prettier.tabWidth": 2,
+  "prettier.useTabs": false
+}
