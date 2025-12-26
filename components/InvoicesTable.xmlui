@@ -1,0 +1,43 @@
+<!-- Component props: 
+  - invoices: Array of invoice objects to display
+  - showDetails: Boolean to indicate if details column should be shown
+-->
+<Component
+  name="InvoicesTable"
+  var.simpleColorMap="{{ 
+    draft: { label: 'white', background: 'orange' }, 
+    paid: { label: 'white', background: 'green' },
+    sent: { label: 'white', background: 'blue' }
+  }}"
+>
+
+  <AppState
+    id="invoicesState"
+  />
+
+  <Table data="{$props.invoices}">
+    <Column bindTo="invoice_number" width="*" />
+    <Column bindTo="client" width="*" />
+    <Column bindTo="issue_date" width="*" />
+    <Column bindTo="due_date" width="*" />
+    <Column
+      bindTo="paid_date"
+      width="*"
+      when="{$props.showDetails}"
+    />
+    <Column bindTo="total" width="*">
+      {'$' + $item.total}
+    </Column>
+    <Column bindTo="status" width="*">
+      <Badge value="{$item.status}" colorMap="{simpleColorMap}" variant="pill" />
+    </Column>
+    <Column header="DETAILS" width="*" when="{$props.showDetails}">
+      <Icon
+        name="doc-outline"
+        cursor="pointer"
+        onClick="() => {invoicesState.update({invoiceToEdit: $item})}"
+      />
+    </Column>
+  </Table>
+
+</Component>

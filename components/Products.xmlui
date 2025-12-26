@@ -1,0 +1,26 @@
+<Component
+  name="Products"
+>
+  <DataSource id="products" url="/api/products" />
+
+  <HStack>
+    <H1>
+      Products
+    </H1>
+    <SpaceFiller />
+    <Button onClick="() => navigate('/importProducts')">
+      Import Products
+    </Button>
+  </HStack>
+
+  <Table data="{products}">
+    <Column bindTo="name" width="2*" />
+    <Column bindTo="description" width="2*" />
+    <Column bindTo="price" width="*">
+      {'$' + $item.price}
+    </Column>
+    <Column bindTo="created_at" width="*">
+      {formatDate($item.created_at,"yyyy-MM-dd" )}
+    </Column>
+  </Table>
+</Component>

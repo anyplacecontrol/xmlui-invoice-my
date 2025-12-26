@@ -1,0 +1,127 @@
+<Component
+  name="ImportProducts"
+  var.selectedItems="{ [] }"
+  var.parsedCsv="{null}"
+  var.processedCount="{0}"
+  var.errorCount="{0}"
+  var.isImporting="{false}"
+  var.isComplete="{false}"
+>
+  <DataSource id="existingProducts" url="/api/products" />
+
+  <script>        
+    function isDuplicate(name) {
+      // function to check for duplicates
+      return existingProducts.value.some(p => p.name === name);
+    }
+
+    function importSelected() {
+    console.log('Importing selected items:', selectedItems);
+      errorCount = 0;
+      processedCount = 0;
+      isImporting = true;
+
+      importQueue.enqueueItems(selectedItems)
+    }
+  </script>
+
+  <!-- Background upload queue -->
+  <Queue
+    id="importQueue"
+    clearAfterFinish="true"
+    onProcess="processing => {
+        // Update progress
+        processing.reportProgress(processedCount + 1);
+        // Make API call to upload objects (delay happens server-side)
+        const result = Actions.callApi({
+          url: '/api/products',
+          method: 'POST',
+          body: {id:0, ...processing.item}
+        });
+        delay(3000);
+        processedCount++;
+
+        return result;
+      }"
+    onProcessError="(error, processing) => {
+        errorCount++;
+        console.error('Processing failed:', error.message, processing.item);
+        // Return true to show default error display
+        return true;
+      }"
+    onComplete="() => {
+        console.log('All items imported!');
+        isImporting = false;   
+        isComplete = true;     
+      }"
+  >
+    <property name="progressFeedback">
+      <HStack>
+        <Text>
+          Processing item {processedCount + 1}...
+        </Text>
+      </HStack>
+    </property>
+
+    <property name="resultFeedback">
+      <HStack>
+        <Icon name="checkmark" />
+        <Text>
+          All {processedCount} items processed successfully!
+        </Text>
+      </HStack>
+    </property>
+  </Queue>
+
+  <!-- Visual component UI -->
+  <H1>
+    Import Products
+  </H1>
+
+  <Text>
+    Upload a CSV file containing product data (name, description, price) to review and import into your product catalog.
+  </Text>
+
+  <Card width="30%">
+    <FileInput
+      id="fileInput"
+      acceptsFileType="{['.csv']}"
+      onDidChange="{ (val) => {
+        isComplete = false;
+        window.parseCsv(val[0], (data) => {parsedCsv = data})
+      } }"
+    />
+  </Card>
+
+  <Fragment when="{ parsedCsv }">
+    <HStack>
+      <H2>
+        Select some or all records, then click
+      </H2>
+      <Button
+        enabled="{selectedItems.length>0 && !isImporting && !isComplete }"
+        onClick="importSelected"
+      >
+        Import
+      </Button>
+    </HStack>
+    <Table
+      id="importProductsTable"
+      when="{ !isComplete }"
+      data="{ parsedCsv }"
+      rowsSelectable="true"
+      enableMultiRowSelection="true"
+      onSelectionDidChange="(newSel) => selectedItems = newSel"
+      rowDisabledPredicate="{(row) => isDuplicate(row.name)}"
+    >
+      <Column bindTo="name">
+        <Text color="{ isDuplicate($item.name) ? 'red' : 'inherit' }">
+          { $item.name }
+        </Text>
+      </Column>
+      <Column bindTo="description" />
+      <Column bindTo="price" />
+    </Table>
+
+  </Fragment>
+</Component>

@@ -1,16 +1,10 @@
 <App
+  name="XMLUI Invoice"
   layout="vertical-full-header"
   loggedInUser="{{ display_name: '', avatar_url: '' }}"
-  onReady="
-    //read all users and set logged in user
-    const response = Actions.callApi({ url: '/api/users', method: 'get' });
-    if (Array.isArray(response) && response.length) setLoggedInUser(response[0]);
-
-    //read settings and set app state
-    const sresp = Actions.callApi({ url: '/api/settings', method: 'get' });
-    if (Array.isArray(sresp) && sresp.length && sresp[0].avatar_border_radius) {
-      appState.update({ settings: { avatar_border_radius: sresp[0].avatar_border_radius } });    
-    }"
+  defaultTheme="invoice"
+  codeBehind="Main.xmlui.xs"
+  onReady="{init()}"
 >
   <AppState
     id="appState"
@@ -18,7 +12,7 @@
   />
 
   <AppHeader>
-    <property name="logoTemplate">
+    <property name="titleTemplate">
       <H1>
         XMLUI Invoice
       </H1>
@@ -40,25 +34,37 @@
       </Link>
     </property>
   </AppHeader>
+
   <NavPanel>
     <NavLink label="Dashboard" to="/" />
     <NavLink label="Invoices" to="/invoices" />
     <NavLink label="Clients" to="/clients" />
     <NavLink label="Products" to="/products" />
+    <NavLink label="Import" to="/importProducts" />
     <NavLink label="Settings" to="/settings" />
   </NavPanel>
   <Pages fallbackPath="/">
     <Page url="/">
-      <!-- empty content area -->
+    </Page>
+    <Page url="/invoices">
+      <Invoices />
     </Page>
     <Page url="/settings">
       <Settings />
     </Page>
+    <Page url="/products">
+      <Products />
+    </Page>
+    <Page url="/importProducts">
+      <ImportProducts />
+    </Page>
   </Pages>
+
   <Footer>
-      <Text >
-        Built with XMLUI
-      </Text>
-      <ToneSwitch />    
+    <Text>
+      Built with XMLUI {(window.config.appVersion) }
+    </Text>
+    <ToneSwitch />
   </Footer>
+
 </App>

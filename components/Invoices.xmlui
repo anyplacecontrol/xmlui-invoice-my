@@ -1,0 +1,25 @@
+<Component
+  name="Invoices"
+>
+  <!-- Non-visual Elements -->
+  <AppState
+    id="invoicesState"
+    initialValue="{{invoiceToEdit:null}}"
+  />
+  <DataSource id="invoices" url="/api/invoices" />
+
+  <!-- Visual Elements -->
+  <HStack>
+    <H1>
+      Invoices
+    </H1>
+    <SpaceFiller />
+    <Button onClick="() => navigate('/invoices/new')">
+      Create Invoice
+    </Button>
+  </HStack>
+
+  <InvoicesTable invoices="{invoices}" showDetails="{true}" />
+
+  <InvoiceEditModal />
+</Component>

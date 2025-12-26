@@ -1,26 +1,85 @@
 <Component name="Settings">
-        <H2>
-                Settings
-        </H2>
-        <Card>
-        <HStack >
-                <H2>
-                        Users
-                </H2>
-                <SpaceFiller />
-                <Button>
-                        Add User
-                </Button>
-        </HStack>
-         <DataSource id="users" url="/api/users" />
+  <script>
+    function saveSettings() {
+      Actions.callApi({
+        method: 'put',
+        url: '/api/settings',
+        body: { avatar_border_radius: avatarRadiusInput.value || '' },
+        errorNotificationMessage: 'Error saving settings ',        
+        onSuccess: (res) => {
+          appState.update({ settings: { avatar_border_radius: avatarRadiusInput.value } });
+          toast.success('Settings Saved Successfully');
+          }              
+      });
+    }
+  </script>
 
-        <Table title="Users" data="{users}">
-                <Column bindTo="username" />
-                <Column bindTo="display_name"/>
-                <Column bindTo="email"  />
-                <Column bindTo="avatar_url" header="Avatar" />
-        </Table>
-        </Card>
+  <!-- Non-visual Elements -->
+  <DataSource id="users" url="/api/users" />
 
-       
+  <!-- Visual Elements -->
+
+  <AppState
+    id="appState"
+    initialValue="{{ settings: {avatar_border_radius: '0px'} }}"
+  />
+  <H1>
+    Settings
+  </H1>
+  <Card>
+    <HStack>
+      <H2>
+        Users
+      </H2>
+      <SpaceFiller />
+      <Button>
+        Add User
+      </Button>
+    </HStack>
+
+    <Table title="Users" data="{users}">
+      <Column bindTo="username" width="*" />
+      <Column bindTo="display_name" />
+      <Column bindTo="email" width="2*" />
+      <Column header="Avatar">
+        <Avatar
+          url="{$item.avatar_url}"
+          size="sm"
+          borderRadius="{appState.value.settings.avatar_border_radius}"
+        />
+      </Column>
+      <Column header="Logged In" width="*">
+
+        <RadioGroup
+          initialValue="{loggedInUser.username}"
+          onDidChange="(val) => setLoggedInUser($item)"
+        >
+          <Option value="{$item.username}" />
+        </RadioGroup>
+
+      </Column>
+    </Table>
+  </Card>
+
+  <Card>
+    <H2>
+      Avatar Settings
+    </H2>
+    <HStack verticalAlignment="center">
+      <Text>
+        border radius
+      </Text>
+      <TextBox
+        id="avatarRadiusInput"
+        width="160px"
+        initialValue="{appState.value.settings.avatar_border_radius}"
+        placeholder="e.g. 50% or 10px"
+      />
+      <Button onClick="saveSettings()">
+        Save
+      </Button>
+    </HStack>
+
+  </Card>
+
 </Component>

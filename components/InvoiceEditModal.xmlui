@@ -1,0 +1,73 @@
+<!-- This component uses  application state 'invoicesState': 
+   - invoiceToEdit: The invoice object to edit in the modal (null if no modal is open)
+-->
+
+<Component
+  name="InvoiceEditModal"
+  var.invoice="{invoicesState.value.invoiceToEdit}"
+>
+  <AppState
+    id="invoicesState"
+  />
+
+  <ModalDialog
+    id="modalEditInvoice"
+    width="500px"
+    when="{invoice}"
+    onClose="() => {invoicesState.update({invoiceToEdit: null})}"
+  >
+    <InvoicesTable
+      invoices="{[invoice]}"
+      showDetails="{false}"
+    />
+
+    <Form
+      data="{invoice}"
+      id="editInvoiceForm"
+      onSubmit="(toSave) => {
+        Actions.callApi({
+          method: 'put',
+          url: '/api/invoices/' + invoice.invoice_number,
+          body: toSave,         
+          completedNotificationMessage: 'Invoice saved',
+          errorNotificationMessage: 'Error saving invoice ',                                   
+        });
+      }"
+    >
+      <FormItem label="Notes" bindTo="notes" />
+
+      <FormItem label="Status" bindTo="status" type="select">
+        <Option value="draft">
+          draft
+        </Option>
+        <Option value="sent">
+          sent
+        </Option>
+        <Option value="paid">
+          paid
+        </Option>
+      </FormItem>
+
+      <Table data="{JSON.parse(invoice.items)}">
+        <Column bindTo="product" width="*" />
+        <Column bindTo="quantity" width="*" />
+        <Column bindTo="price" width="*">
+          {'$' + $item.price}
+        </Column>
+      </Table>
+
+      <property name="buttonRowTemplate">
+        <HStack>
+          <SpaceFiller />
+          <Button
+            type="button"
+            label="Cancel"
+            onClick="() => {invoicesState.update({invoiceToEdit: null})}"
+          />
+          <Button type="submit" label="Save" />
+        </HStack>
+      </property>
+    </Form>
+  </ModalDialog>
+
+</Component>
