@@ -1,0 +1,70 @@
+<!-- 
+  component uses AppState "clientState" to manage the state of modal
+        clientToEdit:
+                 - empty object when we Add new client  
+                 - object with data when we Edit existing client
+                 - null when modal is closed
+   -->
+
+<Component
+  name="ClientModal"
+>
+
+  <AppState
+    id="clientState"
+  />
+
+  <script>  
+  var clientToEdit = clientState.value.clientToEdit;
+  var isEditMode = clientToEdit.id != null;
+  var regexPhone =  /^\d{3}-\d{3}-\d{4}$/;
+  </script>
+
+  <ModalDialog
+    id="modalEditInvoice"
+    width="500px"
+    when="{clientToEdit != null}"
+    onClose="() => {clientState.update({clientToEdit: null})}"
+  >
+
+    <Form
+      data="{clientToEdit}"
+      id="editClientForm"
+      onCancel="() => {clientState.update({clientToEdit: null})}"
+    >
+      <FormItem label="name" bindTo="name" required placeholder="Enter name" />
+      <FormItem
+        label="email"
+        bindTo="email"
+        pattern="email"
+        required
+        placeholder="example@example.com"
+      />
+      <FormItem
+        label="phone"
+        bindTo="phone"
+        required
+        placeholder="123-456-7890"
+        regex="{regexPhone}"
+      />
+      <FormItem
+        label="address"
+        bindTo="address"
+        required
+        placeholder="Enter address"
+      />
+
+      <event name="submit">
+        <APICall
+          method="{isEditMode ? 'put' : 'post'}"
+          url="{ isEditMode ? `/api/clients/${clientToEdit.id}` : '/api/clients' }"
+          completedNotificationMessage="Client created successfully!"
+          errorNotificationMessage="Error creating client"
+          onSuccess="Actions.navigate('/clients')"
+          body="{$param}"
+        />
+      </event>
+    </Form>
+  </ModalDialog>
+
+</Component>

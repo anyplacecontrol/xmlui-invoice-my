@@ -8,6 +8,13 @@ window.getTodayDate = function () {
   return new Date().toISOString();
 }
 
+// Truncate a string to `max` characters and append an ellipsis
+window.truncate = function (value, max) {  
+    if (!value) return "";    
+    if (value.length <= max) return value;
+    return value.slice(0, max - 1) + '...';  
+}
+
 window.parseCsv = function (file, setter) {
   // Read and parse CSV file, call setter with array of objects
   const reader = new FileReader();
@@ -26,3 +33,4 @@ window.parseCsv = function (file, setter) {
   };
   reader.readAsText(file);
 };
+

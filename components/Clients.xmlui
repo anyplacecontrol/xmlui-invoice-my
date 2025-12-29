@@ -1,0 +1,40 @@
+<Component
+  name="Clients"
+  var.clientToEdit="{null}"
+>
+  <!-- Non-visual Elements -->
+  <DataSource id="clients" url="/api/clients" />
+  <AppState
+    id="clientState"
+    initialValue="{{clientToEdit: null}}"
+  />
+
+  <!-- Visual Elements -->
+  <HStack>
+    <H1>
+      Clients
+    </H1>
+    <SpaceFiller />
+    <Button onClick="() => {clientState.update({clientToEdit: {}})}">
+      Create Client
+    </Button>
+  </HStack>
+
+  <Table data="{clients}">
+    <Column bindTo="name" width="2*" />
+    <Column bindTo="email" width="2*" />
+    <Column bindTo="phone" width="*" />
+    <Column bindTo="outstanding" width="*">
+      {'$' + $item.outstanding.toFixed(2)}
+    </Column>
+    <Column header="DETAILS" width="*">
+      <Icon
+        name="doc-outline"
+        cursor="pointer"
+        onClick="() => {clientState.update({clientToEdit: $item})}"
+      />
+    </Column>
+  </Table>
+
+  <ClientModal />
+</Component>

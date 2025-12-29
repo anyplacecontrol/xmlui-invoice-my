@@ -1,0 +1,180 @@
+<Component
+  name="CreateInvoiceAlternative"
+>
+
+  <Form
+    id="createInvoiceForm"
+    onCancel="Actions.navigate('/invoices')"
+  >
+
+    <DataSource id="allProducts" url="/api/products" />
+
+    <Card>
+      <H2>
+        Create New Invoice
+      </H2>
+
+      <FlowLayout>
+        <FormItem
+          bindTo="client"
+          label="Client"
+          type="select"
+          placeholder="Select a client"
+          width="300px"
+          required="true"
+          requiredInvalidMessage="Please select a client"
+        >
+          <Items data="/api/clients">
+            <Option value="{$item.name}" label="{$item.name}" />
+          </Items>
+        </FormItem>
+
+        <FormItem
+          bindTo="issueDate"
+          label="Issue Date"
+          type="datePicker"
+          initialValue="{formatDate(window.getTodayDate(), 'MM/dd/yyyy')}"
+          width="*"
+          minWidth="120px"
+          enabled="{false}"
+        />
+        <FormItem
+          bindTo="dueDate"
+          label="Due Date"
+          type="datePicker"
+          width="*"
+          minWidth="120px"
+          required="true"
+          requiredInvalidMessage="Please select a due date"
+        />
+      </FlowLayout>
+
+      <H2>
+        Line Items
+      </H2>
+
+      <!-- Binding to field "items" which is array -->
+      <FormItem
+        id="lineItemsForm"
+        bindTo="items"
+        type="items"
+        overflowX="scroll"
+      >
+
+        <HStack when="{$itemIndex == 0}" backgroundColor="#f0f0f0">
+          <Text width="200px">
+            Product
+          </Text>
+          <Text width="200px">
+            Description
+          </Text>
+          <Text width="70px">
+            Quantity
+          </Text>
+          <Text width="70px">
+            Price
+          </Text>
+          <Text width="70px">
+            Amount
+          </Text>
+        </HStack>
+
+        <HStack verticalAlignment="top">
+          <DataSource
+            id="productDetails"
+            url="/api/products/byname/{$item.product}"
+            when="{$item.product != null}"
+          />
+          <FormItem
+            bindTo="product"
+            width="200px"
+            required="true"
+            type="select"
+            placeholder="Select a product"
+          >
+            <Items data="{allProducts}">
+              <Option
+                value="{$item.name}"
+                label="{window.truncate($item.name, 19)}"
+              />
+            </Items>
+          </FormItem>
+
+          <Text width="200px" paddingTop="12px">
+            { window.truncate(productDetails.value[0].description, 23) }
+          </Text>
+
+          <FormItem
+            initialValue="1"
+            minValue="1"
+            bindTo="quantity"
+            width="70px"
+            required="true"
+            type="number"
+            requiredInvalidMessage="Required!"
+          />
+
+          <FormItem
+            initialValue="{productDetails.value[0].price || 0}"
+            bindTo="price"
+            width="70px"
+            type="text"
+            enabled="{false}"
+          />
+
+          <FormItem
+            initialValue="{$item.quantity * $item.price || 0}"
+            bindTo="amount"
+            width="70px"
+            type="text"
+            enabled="{false}"
+          />
+
+          <Button
+            marginTop="12px"
+            onClick="()=> lineItemsForm.removeItem($itemIndex)"
+          >
+            X
+          </Button>
+
+        </HStack>
+      </FormItem>
+      <ContentSeparator
+        orientation="horizontal"
+        thickness="1px"
+      />
+      <HStack>
+        <Button
+          label="Add Item"
+          onClick="()=>lineItemsForm.addItem()"
+        />
+        <SpaceFiller />
+        <Text>
+          Total:
+        </Text>
+        <FormItem
+          marginTop="-15px"
+          width="100px"
+          enabled="{false}"
+          bindTo="total"
+          initialValue="${$data.items.reduce((sum, item) => sum + item.amount, 0)}"
+        >
+
+        </FormItem>
+      </HStack>
+    </Card>
+
+    <event name="submit">
+      <APICall
+        method="post"
+        url="/api/invoices"
+        completedNotificationMessage="Invoice created successfully!"
+        errorNotificationMessage="Error creating invoice"
+        onSuccess="Actions.navigate('/invoices')"
+        body="{{...$param, items: JSON.stringify($param.items)}}"
+      />
+    </event>
+
+  </Form>
+
+</Component>
