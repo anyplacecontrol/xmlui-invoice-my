@@ -20,7 +20,7 @@
 
       <FlowLayout>
         <FormItem
-          bindTo="id"
+          bindTo="client"
           label="Client"
           type="select"
           placeholder="Select a client"
@@ -29,7 +29,7 @@
           requiredInvalidMessage="Please select a client"
         >
           <Items data="{clients}">
-            <Option value="{$item.id}" label="{$item.name}" />
+            <Option value="{$item.name}" label="{$item.name}" />
           </Items>
         </FormItem>
 
@@ -96,7 +96,7 @@
           <NumberBox
             initialValue="{$cell}"
             minValue="1"
-            onDidChange="(newValue) => updateItemQuantity($rowIndex, newValue)"
+            onDidChange="(newValue) => handleUpdateItemQuantity($rowIndex, newValue)"
             validationStatus="{ $cell < 1 ? 'error' : '' }"
           />
         </Column>
@@ -118,7 +118,7 @@
         <Column
           width="50px"
         >
-          <Button onClick="() => deleteProductByIndex($rowIndex)">
+          <Button onClick="() => handleDeleteItem($rowIndex)">
             X
           </Button>
         </Column>
