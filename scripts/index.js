@@ -2,6 +2,11 @@ window.config = {};
 fetch("config.json")
   .then((r) => (r.ok ? r.json() : {}))
   .then((c) => Object.assign(window.config, c));
+  
+window.getTodayDate = function () {
+  // Return today's date in YYYY-MM-DD format
+  return new Date().toISOString();
+}
 
 window.parseCsv = function (file, setter) {
   // Read and parse CSV file, call setter with array of objects

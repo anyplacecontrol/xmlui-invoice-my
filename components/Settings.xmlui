@@ -1,23 +1,11 @@
-<Component name="Settings">
-  <script>
-    function saveSettings() {
-      Actions.callApi({
-        method: 'put',
-        url: '/api/settings',
-        body: { avatar_border_radius: avatarRadiusInput.value || '' },
-        errorNotificationMessage: 'Error saving settings ',        
-        onSuccess: (res) => {
-          appState.update({ settings: { avatar_border_radius: avatarRadiusInput.value } });
-          toast.success('Settings Saved Successfully');
-          }              
-      });
-    }
-  </script>
+<!-- Component for application settings
+     variables and functions are defined 
+     in the codeBehind file Settings.xmlui.xs
+-->
 
-  <!-- Non-visual Elements -->
+<Component name="Settings" codeBehind="Settings.xmlui.xs">
+
   <DataSource id="users" url="/api/users" />
-
-  <!-- Visual Elements -->
 
   <AppState
     id="appState"
@@ -75,7 +63,7 @@
         initialValue="{appState.value.settings.avatar_border_radius}"
         placeholder="e.g. 50% or 10px"
       />
-      <Button onClick="saveSettings()">
+      <Button onClick="handleSaveSettings">
         Save
       </Button>
     </HStack>

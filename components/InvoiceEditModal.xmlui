@@ -1,10 +1,11 @@
 <!-- This component uses  application state 'invoicesState': 
-   - invoiceToEdit: The invoice object to edit in the modal (null if no modal is open)
+      - invoiceToEdit: The invoice object to edit in the modal (null if no modal is open)
+     Local variables and functions are defined in the codeBehind file InvoiceEditModal.xmlui.xs
 -->
 
 <Component
   name="InvoiceEditModal"
-  var.invoice="{invoicesState.value.invoiceToEdit}"
+  codeBehind="InvoiceEditModal.xmlui.xs"
 >
   <AppState
     id="invoicesState"
@@ -24,15 +25,7 @@
     <Form
       data="{invoice}"
       id="editInvoiceForm"
-      onSubmit="(toSave) => {
-        Actions.callApi({
-          method: 'put',
-          url: '/api/invoices/' + invoice.invoice_number,
-          body: toSave,         
-          completedNotificationMessage: 'Invoice saved',
-          errorNotificationMessage: 'Error saving invoice ',                                   
-        });
-      }"
+      onSubmit="handleEditInvoiceFormSubmit"
     >
       <FormItem label="Notes" bindTo="notes" />
 

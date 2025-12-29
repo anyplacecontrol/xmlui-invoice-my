@@ -42,12 +42,19 @@
     <NavLink label="Products" to="/products" />
     <NavLink label="Import" to="/importProducts" />
     <NavLink label="Settings" to="/settings" />
+
   </NavPanel>
   <Pages fallbackPath="/">
     <Page url="/">
     </Page>
     <Page url="/invoices">
       <Invoices />
+    </Page>
+    <Page url="/create-invoice">
+      <CreateInvoice />
+    </Page>
+    <Page url="/clients">
+      <Clients />
     </Page>
     <Page url="/settings">
       <Settings />

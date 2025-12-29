@@ -1,0 +1,139 @@
+<Component
+  name="CreateInvoice"
+  codeBehind="CreateInvoice.xmlui.xs"
+>
+
+  <DataSource id="clients" url="/api/clients" />
+  <DataSource id="products" url="/api/products" />
+
+  <Form
+    id="createInvoiceForm"
+    data="{newInvoice}"
+    onSubmit="handleSubmit"
+    onWillSubmit="handleWillSubmit"
+    onCancel="Actions.navigate('/invoices')"
+  >
+    <Card>
+      <H2>
+        Create New Invoice
+      </H2>
+
+      <FlowLayout>
+        <FormItem
+          bindTo="id"
+          label="Client"
+          type="select"
+          placeholder="Select a client"
+          width="300px"
+          required="true"
+          requiredInvalidMessage="Please select a client"
+        >
+          <Items data="{clients}">
+            <Option value="{$item.id}" label="{$item.name}" />
+          </Items>
+        </FormItem>
+
+        <FormItem
+          bindTo="issueDate"
+          label="Issue Date"
+          type="datePicker"
+          width="*"
+          minWidth="120px"
+          enabled="{false}"
+        />
+        <FormItem
+          bindTo="dueDate"
+          label="Due Date"
+          type="datePicker"
+          width="*"
+          minWidth="120px"
+          required="true"
+          requiredInvalidMessage="Please select a due date"
+        />
+      </FlowLayout>
+
+      <H2>
+        Line Items
+      </H2>
+
+      <!-- Table is binded to newInvoice.items which is an array of line items -->
+      <Table data="{newInvoice.items}">
+
+        <Column
+          bindTo="product"
+          type="text"
+          width="*"
+          minWidth="250px"
+        >
+          <Select
+            initialValue="{$cell}"
+            marginLeft="-17px"
+            width="247px"
+            placeholder="Select a product"
+            onDidChange="(newValue) => updateItem($rowIndex, newValue)"
+            validationStatus="{ !$cell ? 'error' : '' }"
+          >
+            <Items data="{products}">
+              <Option
+                value="{$item.name}"
+                label="{$item.name}"
+              />
+            </Items>
+          </Select>
+        </Column>
+
+        <Column
+          bindTo="description"
+          type="text"
+          width="150px"
+        />
+
+        <Column
+          type="number"
+          width="80px"
+          bindTo="quantity"
+        >
+          <NumberBox
+            initialValue="{$cell}"
+            minValue="1"
+            onDidChange="(newValue) => updateItemQuantity($rowIndex, newValue)"
+            validationStatus="{ $cell < 1 ? 'error' : '' }"
+          />
+        </Column>
+
+        <Column
+          bindTo="price"
+          type="number"
+          width="80px"
+        />
+
+        <Column
+          type="number"
+          width="80px"
+          header="Total"
+        >
+          ${$item.amount}
+        </Column>
+
+        <Column
+          width="50px"
+        >
+          <Button onClick="() => deleteProductByIndex($rowIndex)">
+            X
+          </Button>
+        </Column>
+      </Table>
+      <HStack>
+        <Button
+          label="Add Item"
+          onClick="handleAddItem"
+        />
+        <SpaceFiller />
+        <Text>
+          Total: ${newInvoice.total}
+        </Text>
+      </HStack>
+    </Card>
+  </Form>
+
+</Component>

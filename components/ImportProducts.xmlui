@@ -1,73 +1,30 @@
+<!-- Component for importing products from a CSV file
+     variables and functions are defined 
+     in the codeBehind file ImportProducts.xmlui.xs
+-->
+
 <Component
   name="ImportProducts"
-  var.selectedItems="{ [] }"
-  var.parsedCsv="{null}"
-  var.processedCount="{0}"
-  var.errorCount="{0}"
-  var.isImporting="{false}"
-  var.isComplete="{false}"
+  codeBehind="ImportProducts.xmlui.xs"
 >
   <DataSource id="existingProducts" url="/api/products" />
-
-  <script>        
-    function isDuplicate(name) {
-      // function to check for duplicates
-      return existingProducts.value.some(p => p.name === name);
-    }
-
-    function importSelected() {
-    console.log('Importing selected items:', selectedItems);
-      errorCount = 0;
-      processedCount = 0;
-      isImporting = true;
-
-      importQueue.enqueueItems(selectedItems)
-    }
-  </script>
 
   <!-- Background upload queue -->
   <Queue
     id="importQueue"
     clearAfterFinish="true"
-    onProcess="processing => {
-        // Update progress
-        processing.reportProgress(processedCount + 1);
-        // Make API call to upload objects (delay happens server-side)
-        const result = Actions.callApi({
-          url: '/api/products',
-          method: 'POST',
-          body: {id:0, ...processing.item}
-        });
-        delay(3000);
-        processedCount++;
-
-        return result;
-      }"
-    onProcessError="(error, processing) => {
-        errorCount++;
-        console.error('Processing failed:', error.message, processing.item);
-        // Return true to show default error display
-        return true;
-      }"
-    onComplete="() => {
-        console.log('All items imported!');
-        isImporting = false;   
-        isComplete = true;     
-      }"
+    onProcess="handleImportProduct"
+    onComplete="handleImportComplete"
   >
     <property name="progressFeedback">
-      <HStack>
-        <Text>
-          Processing item {processedCount + 1}...
-        </Text>
-      </HStack>
+      Processing item {processedCount + 1}...
     </property>
 
     <property name="resultFeedback">
       <HStack>
         <Icon name="checkmark" />
         <Text>
-          All {processedCount} items processed successfully!
+          {processedCount} item(s) processed!
         </Text>
       </HStack>
     </property>
@@ -87,7 +44,6 @@
       id="fileInput"
       acceptsFileType="{['.csv']}"
       onDidChange="{ (val) => {
-        isComplete = false;
         window.parseCsv(val[0], (data) => {parsedCsv = data})
       } }"
     />
@@ -99,7 +55,7 @@
         Select some or all records, then click
       </H2>
       <Button
-        enabled="{selectedItems.length>0 && !isImporting && !isComplete }"
+        enabled="{selectedItems.length>0 && !isImporting  }"
         onClick="importSelected"
       >
         Import
@@ -107,7 +63,6 @@
     </HStack>
     <Table
       id="importProductsTable"
-      when="{ !isComplete }"
       data="{ parsedCsv }"
       rowsSelectable="true"
       enableMultiRowSelection="true"

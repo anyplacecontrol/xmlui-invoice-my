@@ -14,7 +14,7 @@
       Invoices
     </H1>
     <SpaceFiller />
-    <Button onClick="() => navigate('/invoices/new')">
+    <Button onClick="() => navigate('/create-invoice')">
       Create Invoice
     </Button>
   </HStack>
