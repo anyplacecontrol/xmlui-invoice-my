@@ -43,17 +43,16 @@ function handleUpdateItemQuantity(rowIndex, quantity) {
 }
 
 function handleSubmit(formData) {
-  newInvoice = {
-    items: JSON.stringify(newInvoice.items),
-    client: formData.client,
-    issueDate: formatDate(newInvoice.issueDate, "yyyy-MM-dd"),
-    dueDate: formatDate(formData.dueDate, "yyyy-MM-dd"),
-    total: newInvoice.total,
-  };
   Actions.callApi({
     method: "POST",
     url: "/api/invoices",
-    body: newInvoice,
+    body: {
+      items: JSON.stringify(newInvoice.items),
+      client: formData.client,
+      issueDate: formatDate(newInvoice.issueDate, "yyyy-MM-dd"),
+      dueDate: formatDate(formData.dueDate, "yyyy-MM-dd"),
+      total: newInvoice.total,
+    },
     completedNotificationMessage: "Invoice created successfully!",
     errorNotificationMessage: "Error creating invoice ",
     onSuccess: "Actions.navigate('/invoices')",
